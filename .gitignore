@@ -1,0 +1,8 @@
+# Screenshots
+screenshots/
+
+# Playwright MCP
+.playwright-mcp/
+
+# IDE settings
+.vscode/
