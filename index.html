@@ -1,0 +1,1677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Weight & Waist Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Nunito+Sans:ital,opsz,wght@0,6..12,300..700;1,6..12,300..700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════════
+   DESIGN SYSTEM
+   ═══════════════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root {
+  /* Palette — warm teal + coral on parchment */
+  --teal-50: #effcfc;
+  --teal-100: #d6f6f7;
+  --teal-200: #b2ecef;
+  --teal-300: #7ddce2;
+  --teal-400: #41c3cd;
+  --teal-500: #26a7b3;
+  --teal-600: #228697;
+  --teal-700: #226d7b;
+  --teal-800: #245966;
+  --teal-900: #224a56;
+
+  --indigo-50: #eef2ff;
+  --indigo-100: #e0e7ff;
+  --indigo-200: #c7d2fe;
+  --indigo-300: #a5b4fc;
+  --indigo-400: #818cf8;
+  --indigo-500: #6366f1;
+  --indigo-600: #4f46e5;
+  --indigo-700: #4338ca;
+
+  --emerald-400: #34d399;
+  --emerald-500: #10b981;
+  --emerald-600: #059669;
+
+  --rose-400: #fb7185;
+  --rose-500: #f43f5e;
+  --rose-600: #e11d48;
+
+  --warm-50: #fefdfb;
+  --warm-100: #fdf8f0;
+  --warm-200: #f5ede0;
+  --warm-300: #e8dcc8;
+  --warm-400: #c4b598;
+  --warm-500: #9a8b6f;
+
+  /* Semantic tokens */
+  --bg: var(--warm-50);
+  --bg-raised: #ffffff;
+  --bg-inset: var(--warm-100);
+  --border: #e5e0d5;
+  --border-focus: var(--teal-400);
+  --text-primary: #1a1814;
+  --text-secondary: #6b6356;
+  --text-tertiary: #9a9285;
+  --shadow-sm: 0 1px 3px rgba(26,24,20,0.04), 0 1px 2px rgba(26,24,20,0.06);
+  --shadow-md: 0 4px 12px rgba(26,24,20,0.06), 0 2px 4px rgba(26,24,20,0.04);
+  --shadow-lg: 0 12px 32px rgba(26,24,20,0.08), 0 4px 8px rgba(26,24,20,0.04);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --radius-xs: 6px;
+
+  --chart-weight: var(--teal-500);
+  --chart-waist: var(--indigo-500);
+
+  /* Transitions */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --bg: #141210;
+  --bg-raised: #1e1c18;
+  --bg-inset: #0f0e0c;
+  --border: #2e2a24;
+  --border-focus: var(--teal-400);
+  --text-primary: #f0ece4;
+  --text-secondary: #9a9285;
+  --text-tertiary: #6b6356;
+  --shadow-sm: 0 1px 3px rgba(0,0,0,0.2), 0 1px 2px rgba(0,0,0,0.3);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.25), 0 2px 4px rgba(0,0,0,0.2);
+  --shadow-lg: 0 12px 32px rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.2);
+
+  --chart-weight: var(--teal-400);
+  --chart-waist: var(--indigo-400);
+}
+
+html {
+  font-size: 16px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: 'Nunito Sans', -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  transition: background 0.4s var(--ease-out), color 0.4s var(--ease-out);
+  overflow-x: hidden;
+}
+
+/* ═══════════════════════════════════════════════
+   LAYOUT SHELL
+   ═══════════════════════════════════════════════ */
+.app {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 24px 20px 80px;
+}
+
+/* ═══════════════════════════════════════════════
+   HEADER
+   ═══════════════════════════════════════════════ */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-logo {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, var(--teal-500), var(--teal-700));
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.header-logo svg {
+  width: 22px;
+  height: 22px;
+  color: white;
+}
+
+.header h1 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.35rem;
+  letter-spacing: -0.02em;
+  color: var(--text-primary);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border);
+  background: var(--bg-raised);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s var(--ease-out);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-icon:hover {
+  border-color: var(--teal-400);
+  color: var(--teal-600);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.btn-icon:active {
+  transform: scale(0.94);
+}
+
+.btn-icon svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-icon input[type="file"] {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  cursor: pointer;
+}
+
+/* ═══════════════════════════════════════════════
+   STAT CARDS
+   ═══════════════════════════════════════════════ */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.stat-card {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px 20px 18px;
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s var(--ease-out);
+  animation: cardIn 0.6s var(--ease-out) both;
+}
+
+.stat-card:nth-child(2) { animation-delay: 0.08s }
+
+.stat-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+}
+
+.stat-card--weight::before {
+  background: linear-gradient(90deg, var(--teal-400), var(--teal-600));
+}
+
+.stat-card--waist::before {
+  background: linear-gradient(90deg, var(--indigo-400), var(--indigo-600));
+}
+
+.stat-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-tertiary);
+  margin-bottom: 8px;
+}
+
+.stat-label svg {
+  width: 16px;
+  height: 16px;
+}
+
+.stat-value {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 800;
+  font-size: 2.2rem;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  color: var(--text-primary);
+}
+
+.stat-unit {
+  font-weight: 400;
+  font-size: 1rem;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+
+.stat-delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: -0.01em;
+}
+
+.stat-delta--down {
+  background: rgba(16,185,129,0.12);
+  color: var(--emerald-600);
+}
+
+[data-theme="dark"] .stat-delta--down {
+  background: rgba(52,211,153,0.15);
+  color: var(--emerald-400);
+}
+
+.stat-delta--up {
+  background: rgba(244,63,94,0.1);
+  color: var(--rose-600);
+}
+
+[data-theme="dark"] .stat-delta--up {
+  background: rgba(251,113,133,0.15);
+  color: var(--rose-400);
+}
+
+.stat-delta--stable {
+  background: rgba(154,146,133,0.12);
+  color: var(--text-tertiary);
+}
+
+.stat-delta svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ═══════════════════════════════════════════════
+   CHART SECTION
+   ═══════════════════════════════════════════════ */
+.chart-section {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px 16px;
+  margin-bottom: 24px;
+  animation: cardIn 0.6s var(--ease-out) 0.14s both;
+}
+
+.chart-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.chart-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.chart-toggles {
+  display: flex;
+  gap: 8px;
+}
+
+.chart-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  background: transparent;
+  cursor: pointer;
+  font-family: 'Nunito Sans', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  transition: all 0.2s var(--ease-out);
+  user-select: none;
+}
+
+.chart-toggle:active { transform: scale(0.95) }
+
+.chart-toggle .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  transition: opacity 0.2s;
+}
+
+.chart-toggle--weight .dot { background: var(--chart-weight) }
+.chart-toggle--waist .dot { background: var(--chart-waist) }
+
+.chart-toggle.active {
+  background: var(--bg-inset);
+  border-color: transparent;
+  color: var(--text-primary);
+}
+
+.chart-toggle:not(.active) .dot { opacity: 0.35 }
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2.2 / 1;
+  min-height: 200px;
+}
+
+.chart-wrap svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Chart draw animation */
+.chart-line {
+  stroke-dasharray: var(--line-len, 2000);
+  stroke-dashoffset: var(--line-len, 2000);
+  animation: drawLine 1.6s var(--ease-out) forwards;
+}
+
+.chart-line--weight { animation-delay: 0.3s }
+.chart-line--waist  { animation-delay: 0.5s }
+
+.chart-area {
+  opacity: 0;
+  animation: fadeArea 1.2s var(--ease-out) forwards;
+}
+
+.chart-area--weight { animation-delay: 0.6s }
+.chart-area--waist  { animation-delay: 0.8s }
+
+.chart-dot {
+  opacity: 0;
+  animation: popDot 0.35s var(--ease-spring) forwards;
+}
+
+/* Tooltip */
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-xs);
+  padding: 8px 12px;
+  box-shadow: var(--shadow-md);
+  font-size: 0.78rem;
+  opacity: 0;
+  transition: opacity 0.15s;
+  z-index: 10;
+  white-space: nowrap;
+}
+
+.chart-tooltip.visible { opacity: 1 }
+
+.chart-tooltip-date {
+  font-weight: 700;
+  font-family: 'Outfit', sans-serif;
+  margin-bottom: 2px;
+}
+
+.chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.chart-tooltip-row .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+/* ═══════════════════════════════════════════════
+   FORM SECTION
+   ═══════════════════════════════════════════════ */
+.form-section {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  margin-bottom: 24px;
+  animation: cardIn 0.6s var(--ease-out) 0.22s both;
+}
+
+.form-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-bottom: 16px;
+  letter-spacing: -0.01em;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.form-field label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-tertiary);
+  margin-bottom: 6px;
+}
+
+.form-field input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.2s var(--ease-out);
+  outline: none;
+}
+
+.form-field input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px rgba(38,167,179,0.12);
+}
+
+.form-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.btn {
+  padding: 10px 22px;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  border: none;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s var(--ease-out);
+  letter-spacing: -0.01em;
+}
+
+.btn:active { transform: scale(0.96) }
+
+.btn svg { width: 16px; height: 16px }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--teal-500), var(--teal-600));
+  color: white;
+  box-shadow: 0 2px 8px rgba(34,134,151,0.25);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 4px 16px rgba(34,134,151,0.35);
+  transform: translateY(-1px);
+}
+
+.btn-primary:active {
+  transform: scale(0.96);
+  box-shadow: 0 1px 4px rgba(34,134,151,0.2);
+}
+
+.btn-secondary {
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1.5px solid var(--border);
+}
+
+.btn-secondary:hover {
+  border-color: var(--text-tertiary);
+  color: var(--text-primary);
+}
+
+/* ═══════════════════════════════════════════════
+   ENTRIES LIST
+   ═══════════════════════════════════════════════ */
+.entries-section {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 24px 20px;
+  animation: cardIn 0.6s var(--ease-out) 0.3s both;
+}
+
+.entries-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.entries-title {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.05rem;
+  letter-spacing: -0.01em;
+}
+
+.entries-count {
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  font-weight: 600;
+  background: var(--bg-inset);
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.entries-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.entry-row {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  animation: rowIn 0.35s var(--ease-out) both;
+}
+
+.entry-row:hover {
+  background: var(--bg-inset);
+}
+
+.entry-date {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--text-primary);
+}
+
+.entry-metric {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.88rem;
+  min-width: 70px;
+  text-align: right;
+}
+
+.entry-metric span {
+  font-weight: 400;
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  margin-left: 2px;
+}
+
+.entry-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.entry-actions button {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-xs);
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+}
+
+.entry-actions button:hover {
+  background: var(--bg-inset);
+  color: var(--text-primary);
+}
+
+.entry-actions button.btn-delete:hover {
+  background: rgba(244,63,94,0.1);
+  color: var(--rose-500);
+}
+
+.entry-actions button svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-tertiary);
+}
+
+.empty-state svg {
+  width: 48px;
+  height: 48px;
+  margin-bottom: 12px;
+  opacity: 0.4;
+}
+
+.empty-state p {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════
+   CONFIRM DIALOG
+   ═══════════════════════════════════════════════ */
+.dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.4);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s var(--ease-out);
+}
+
+.dialog-overlay.visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.dialog {
+  background: var(--bg-raised);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 28px 24px 22px;
+  max-width: 380px;
+  width: 100%;
+  box-shadow: var(--shadow-lg);
+  transform: scale(0.92);
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.dialog-overlay.visible .dialog {
+  transform: scale(1);
+}
+
+.dialog h3 {
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+}
+
+.dialog p {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  margin-bottom: 20px;
+}
+
+.dialog-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn-danger {
+  background: var(--rose-500);
+  color: white;
+  padding: 8px 18px;
+  border-radius: var(--radius-sm);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-danger:hover { background: var(--rose-600) }
+.btn-danger:active { transform: scale(0.96) }
+
+/* ═══════════════════════════════════════════════
+   TOAST
+   ═══════════════════════════════════════════════ */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--text-primary);
+  color: var(--bg);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 10px 20px;
+  border-radius: 30px;
+  opacity: 0;
+  transition: all 0.35s var(--ease-out);
+  z-index: 200;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.toast.visible {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* ═══════════════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════════════ */
+@keyframes cardIn {
+  from { opacity: 0; transform: translateY(14px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+@keyframes rowIn {
+  from { opacity: 0; transform: translateX(-8px) }
+  to { opacity: 1; transform: translateX(0) }
+}
+
+@keyframes drawLine {
+  to { stroke-dashoffset: 0 }
+}
+
+@keyframes fadeArea {
+  to { opacity: 1 }
+}
+
+@keyframes popDot {
+  0% { opacity: 0; transform: scale(0) }
+  100% { opacity: 1; transform: scale(1) }
+}
+
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(8px) }
+  to { opacity: 1; transform: translateY(0) }
+}
+
+/* ═══════════════════════════════════════════════
+   RESPONSIVE
+   ═══════════════════════════════════════════════ */
+@media (max-width: 767px) {
+  .app { padding: 16px 14px 60px }
+
+  .header h1 { font-size: 1.15rem }
+
+  .stats-grid { gap: 10px }
+
+  .stat-card { padding: 16px 16px 14px }
+  .stat-value { font-size: 1.7rem }
+
+  .chart-wrap { aspect-ratio: 1.6 / 1 }
+
+  .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .entry-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px 12px;
+    padding: 12px 10px;
+  }
+
+  .entry-date {
+    font-size: 0.82rem;
+    flex: 1 1 100%;
+    margin-bottom: 2px;
+  }
+
+  .entry-metric {
+    min-width: auto;
+    font-size: 0.88rem;
+  }
+
+  .entry-actions {
+    margin-left: auto;
+  }
+}
+
+@media (max-width: 380px) {
+  .stats-grid { grid-template-columns: 1fr }
+  .stat-value { font-size: 1.9rem }
+  .header-actions { gap: 4px }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .app { max-width: 720px }
+}
+
+@media (min-width: 1024px) {
+  .app { padding: 40px 24px 80px }
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
+</head>
+<body>
+<div class="app" id="app">
+  <!-- HEADER -->
+  <header class="header">
+    <div class="header-brand">
+      <div class="header-logo">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5a3.5 3.5 0 1 0 7 0 3.5 3.5 0 1 0-7 0"/><path d="M2 21v-1a7 7 0 0 1 7-7h0"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-1a4 4 0 0 0-3-3.87"/><line x1="12" y1="17" x2="12" y2="22"/><line x1="9.5" y1="19.5" x2="14.5" y2="19.5"/></svg>
+      </div>
+      <h1>Weight & Waist Tracker</h1>
+    </div>
+    <div class="header-actions">
+      <button class="btn-icon" id="themeToggle" aria-label="Toggle dark mode" title="Toggle theme">
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <button class="btn-icon" id="importBtn" aria-label="Import data" title="Import JSON">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <input type="file" accept=".json" id="importInput" aria-label="Choose file to import">
+      </button>
+      <button class="btn-icon" id="exportBtn" aria-label="Export data" title="Export JSON">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- STAT CARDS -->
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card stat-card--weight">
+      <div class="stat-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a9 9 0 1 0 9 9"/><path d="M12 7v5l3 3"/></svg>
+        Weight
+      </div>
+      <div class="stat-value" id="weightValue">--<span class="stat-unit">kg</span></div>
+      <div class="stat-delta" id="weightDelta"></div>
+    </div>
+    <div class="stat-card stat-card--waist">
+      <div class="stat-label">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
+        Waist
+      </div>
+      <div class="stat-value" id="waistValue">--<span class="stat-unit">cm</span></div>
+      <div class="stat-delta" id="waistDelta"></div>
+    </div>
+  </div>
+
+  <!-- CHART -->
+  <div class="chart-section">
+    <div class="chart-header">
+      <div class="chart-title">Progress Over Time</div>
+      <div class="chart-toggles">
+        <button class="chart-toggle chart-toggle--weight active" id="toggleWeight" aria-label="Toggle weight line">
+          <span class="dot"></span> Weight
+        </button>
+        <button class="chart-toggle chart-toggle--waist active" id="toggleWaist" aria-label="Toggle waist line">
+          <span class="dot"></span> Waist
+        </button>
+      </div>
+    </div>
+    <div class="chart-wrap" id="chartWrap">
+      <div class="chart-tooltip" id="chartTooltip">
+        <div class="chart-tooltip-date" id="tooltipDate"></div>
+        <div class="chart-tooltip-row" id="tooltipWeight"><span class="dot" style="background:var(--chart-weight)"></span><span id="tooltipWeightVal"></span></div>
+        <div class="chart-tooltip-row" id="tooltipWaist"><span class="dot" style="background:var(--chart-waist)"></span><span id="tooltipWaistVal"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div class="form-section">
+    <div class="form-title" id="formTitle">Add Entry</div>
+    <form id="entryForm" autocomplete="off">
+      <div class="form-grid">
+        <div class="form-field">
+          <label for="entryDate">Date</label>
+          <input type="date" id="entryDate" required>
+        </div>
+        <div class="form-field">
+          <label for="entryWeight">Weight (kg)</label>
+          <input type="number" id="entryWeight" step="0.1" min="20" max="300" placeholder="72.0" required>
+        </div>
+        <div class="form-field">
+          <label for="entryWaist">Waist (cm)</label>
+          <input type="number" id="entryWaist" step="0.5" min="40" max="200" placeholder="100" required>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" id="saveBtn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          Save
+        </button>
+        <button type="button" class="btn btn-secondary" id="clearBtn">Clear</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- ENTRIES LIST -->
+  <div class="entries-section">
+    <div class="entries-header">
+      <div class="entries-title">All Entries</div>
+      <div class="entries-count" id="entriesCount">0 entries</div>
+    </div>
+    <div class="entries-list" id="entriesList"></div>
+  </div>
+</div>
+
+<!-- CONFIRM DIALOG -->
+<div class="dialog-overlay" id="dialogOverlay">
+  <div class="dialog">
+    <h3>Delete Entry?</h3>
+    <p id="dialogMsg">This action cannot be undone.</p>
+    <div class="dialog-actions">
+      <button class="btn btn-secondary" id="dialogCancel">Cancel</button>
+      <button class="btn-danger" id="dialogConfirm">Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════════════
+   DATA LAYER
+   ═══════════════════════════════════════════════ */
+const STORAGE_KEY = 'ww-tracker';
+
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const d = JSON.parse(raw);
+      if (d && Array.isArray(d.entries)) return d;
+    }
+  } catch {}
+  return { version: 1, entries: [] };
+}
+
+function saveData(data) {
+  data.entries.sort((a, b) => a.date.localeCompare(b.date));
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getState() {
+  return loadData();
+}
+
+/* ═══════════════════════════════════════════════
+   THEME
+   ═══════════════════════════════════════════════ */
+function initTheme() {
+  const stored = localStorage.getItem('ww-theme');
+  if (stored) {
+    setTheme(stored);
+  } else if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    setTheme('dark');
+  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    if (!localStorage.getItem('ww-theme')) setTheme(e.matches ? 'dark' : 'light');
+  });
+}
+
+function setTheme(t) {
+  document.documentElement.setAttribute('data-theme', t);
+  const sun = document.querySelector('.icon-sun');
+  const moon = document.querySelector('.icon-moon');
+  if (t === 'dark') {
+    sun.style.display = 'none';
+    moon.style.display = 'block';
+  } else {
+    sun.style.display = 'block';
+    moon.style.display = 'none';
+  }
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme');
+  const next = current === 'dark' ? 'light' : 'dark';
+  localStorage.setItem('ww-theme', next);
+  setTheme(next);
+}
+
+/* ═══════════════════════════════════════════════
+   TOAST NOTIFICATION
+   ═══════════════════════════════════════════════ */
+let toastTimer;
+function showToast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('visible');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('visible'), 2400);
+}
+
+/* ═══════════════════════════════════════════════
+   CONFIRM DIALOG
+   ═══════════════════════════════════════════════ */
+let dialogResolve;
+function confirmDialog(msg) {
+  document.getElementById('dialogMsg').textContent = msg;
+  document.getElementById('dialogOverlay').classList.add('visible');
+  return new Promise(resolve => { dialogResolve = resolve });
+}
+
+document.getElementById('dialogConfirm').onclick = () => {
+  document.getElementById('dialogOverlay').classList.remove('visible');
+  dialogResolve && dialogResolve(true);
+};
+document.getElementById('dialogCancel').onclick = () => {
+  document.getElementById('dialogOverlay').classList.remove('visible');
+  dialogResolve && dialogResolve(false);
+};
+document.getElementById('dialogOverlay').onclick = (e) => {
+  if (e.target === e.currentTarget) {
+    e.currentTarget.classList.remove('visible');
+    dialogResolve && dialogResolve(false);
+  }
+};
+
+/* ═══════════════════════════════════════════════
+   STAT CARDS
+   ═══════════════════════════════════════════════ */
+function renderStats(data) {
+  const entries = data.entries;
+  if (!entries.length) {
+    document.getElementById('weightValue').innerHTML = '--<span class="stat-unit">kg</span>';
+    document.getElementById('waistValue').innerHTML = '--<span class="stat-unit">cm</span>';
+    document.getElementById('weightDelta').innerHTML = '';
+    document.getElementById('waistDelta').innerHTML = '';
+    return;
+  }
+
+  const first = entries[0];
+  const last = entries[entries.length - 1];
+
+  animateNumber('weightValue', last.weight, 'kg', 1);
+  animateNumber('waistValue', last.waist, 'cm', 1);
+
+  const wDelta = +(last.weight - first.weight).toFixed(1);
+  const cDelta = +(last.waist - first.waist).toFixed(1);
+
+  renderDelta('weightDelta', wDelta, 'kg');
+  renderDelta('waistDelta', cDelta, 'cm');
+}
+
+function animateNumber(elId, target, unit, decimals) {
+  const el = document.getElementById(elId);
+  const duration = 800;
+  const start = performance.now();
+  const startVal = parseFloat(el.textContent) || 0;
+
+  function tick(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = startVal + (target - startVal) * ease;
+    el.innerHTML = val.toFixed(decimals) + '<span class="stat-unit">' + unit + '</span>';
+    if (t < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function renderDelta(elId, delta, unit) {
+  const el = document.getElementById(elId);
+  let cls, arrow;
+  if (delta < -0.05) {
+    cls = 'stat-delta--down';
+    arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 13 12 18 17 13"/><line x1="12" y1="6" x2="12" y2="18"/></svg>';
+  } else if (delta > 0.05) {
+    cls = 'stat-delta--up';
+    arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 11 12 6 17 11"/><line x1="12" y1="18" x2="12" y2="6"/></svg>';
+  } else {
+    cls = 'stat-delta--stable';
+    arrow = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="14 7 19 12 14 17"/></svg>';
+  }
+  const sign = delta > 0 ? '+' : '';
+  el.className = 'stat-delta ' + cls;
+  el.innerHTML = arrow + ' ' + sign + delta.toFixed(1) + ' ' + unit;
+}
+
+/* ═══════════════════════════════════════════════
+   SVG CHART
+   ═══════════════════════════════════════════════ */
+let showWeight = true, showWaist = true;
+
+function renderChart(data) {
+  const wrap = document.getElementById('chartWrap');
+  const tooltip = document.getElementById('chartTooltip');
+  const entries = data.entries;
+
+  // Remove old SVG
+  const oldSvg = wrap.querySelector('svg');
+  if (oldSvg) oldSvg.remove();
+
+  if (entries.length < 2) {
+    wrap.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><p>Need at least 2 entries for a chart</p></div>';
+    wrap.appendChild(tooltip);
+    return;
+  }
+
+  const W = 800, H = 340;
+  const pad = { top: 20, right: 20, bottom: 40, left: 48 };
+  const cw = W - pad.left - pad.right;
+  const ch = H - pad.top - pad.bottom;
+
+  // Date range
+  const dates = entries.map(e => new Date(e.date + 'T00:00:00'));
+  const minDate = dates[0].getTime();
+  const maxDate = dates[dates.length - 1].getTime();
+  const dateRange = maxDate - minDate || 1;
+
+  // Value ranges
+  const weights = entries.map(e => e.weight);
+  const waists = entries.map(e => e.waist);
+
+  const allVals = [
+    ...(showWeight ? weights : []),
+    ...(showWaist ? waists : [])
+  ];
+  if (!allVals.length) {
+    wrap.innerHTML = '<div class="empty-state"><p>Toggle a metric to see chart</p></div>';
+    wrap.appendChild(tooltip);
+    return;
+  }
+
+  let minVal = Math.min(...allVals);
+  let maxVal = Math.max(...allVals);
+  const vPad = (maxVal - minVal) * 0.12 || 2;
+  minVal -= vPad;
+  maxVal += vPad;
+  const valRange = maxVal - minVal || 1;
+
+  function x(i) { return pad.left + ((dates[i].getTime() - minDate) / dateRange) * cw }
+  function yW(i) { return pad.top + (1 - (weights[i] - minVal) / valRange) * ch }
+  function yC(i) { return pad.top + (1 - (waists[i] - minVal) / valRange) * ch }
+  function yVal(v) { return pad.top + (1 - (v - minVal) / valRange) * ch }
+
+  // Smooth bezier path
+  function smoothPath(points) {
+    if (points.length < 2) return '';
+    let d = `M${points[0][0]},${points[0][1]}`;
+    for (let i = 0; i < points.length - 1; i++) {
+      const p0 = points[Math.max(0, i - 1)];
+      const p1 = points[i];
+      const p2 = points[i + 1];
+      const p3 = points[Math.min(points.length - 1, i + 2)];
+      const tension = 0.35;
+      const cp1x = p1[0] + (p2[0] - p0[0]) * tension;
+      const cp1y = p1[1] + (p2[1] - p0[1]) * tension;
+      const cp2x = p2[0] - (p3[0] - p1[0]) * tension;
+      const cp2y = p2[1] - (p3[1] - p1[1]) * tension;
+      d += ` C${cp1x},${cp1y} ${cp2x},${cp2y} ${p2[0]},${p2[1]}`;
+    }
+    return d;
+  }
+
+  function areaPath(points) {
+    const line = smoothPath(points);
+    const lastX = points[points.length - 1][0];
+    const firstX = points[0][0];
+    const bottom = pad.top + ch;
+    return line + ` L${lastX},${bottom} L${firstX},${bottom} Z`;
+  }
+
+  // Build SVG
+  const ns = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(ns, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+
+  // Defs
+  const defs = document.createElementNS(ns, 'defs');
+
+  // Weight gradient
+  const gW = document.createElementNS(ns, 'linearGradient');
+  gW.id = 'gradW'; gW.setAttribute('x1', '0'); gW.setAttribute('y1', '0');
+  gW.setAttribute('x2', '0'); gW.setAttribute('y2', '1');
+  const sW1 = document.createElementNS(ns, 'stop');
+  sW1.setAttribute('offset', '0%'); sW1.setAttribute('stop-color', 'var(--chart-weight)'); sW1.setAttribute('stop-opacity', '0.18');
+  const sW2 = document.createElementNS(ns, 'stop');
+  sW2.setAttribute('offset', '100%'); sW2.setAttribute('stop-color', 'var(--chart-weight)'); sW2.setAttribute('stop-opacity', '0');
+  gW.append(sW1, sW2);
+
+  // Waist gradient
+  const gC = document.createElementNS(ns, 'linearGradient');
+  gC.id = 'gradC'; gC.setAttribute('x1', '0'); gC.setAttribute('y1', '0');
+  gC.setAttribute('x2', '0'); gC.setAttribute('y2', '1');
+  const sC1 = document.createElementNS(ns, 'stop');
+  sC1.setAttribute('offset', '0%'); sC1.setAttribute('stop-color', 'var(--chart-waist)'); sC1.setAttribute('stop-opacity', '0.15');
+  const sC2 = document.createElementNS(ns, 'stop');
+  sC2.setAttribute('offset', '100%'); sC2.setAttribute('stop-color', 'var(--chart-waist)'); sC2.setAttribute('stop-opacity', '0');
+  gC.append(sC1, sC2);
+  defs.append(gW, gC);
+  svg.append(defs);
+
+  // Grid lines & Y labels
+  const yTicks = 5;
+  for (let i = 0; i <= yTicks; i++) {
+    const val = minVal + (valRange * i) / yTicks;
+    const yy = yVal(val);
+
+    const line = document.createElementNS(ns, 'line');
+    line.setAttribute('x1', pad.left);
+    line.setAttribute('x2', W - pad.right);
+    line.setAttribute('y1', yy);
+    line.setAttribute('y2', yy);
+    line.setAttribute('stroke', 'var(--border)');
+    line.setAttribute('stroke-width', '1');
+    line.setAttribute('stroke-dasharray', i === 0 ? 'none' : '4,4');
+    svg.append(line);
+
+    const label = document.createElementNS(ns, 'text');
+    label.setAttribute('x', pad.left - 8);
+    label.setAttribute('y', yy + 4);
+    label.setAttribute('text-anchor', 'end');
+    label.setAttribute('fill', 'var(--text-tertiary)');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-family', 'Outfit, sans-serif');
+    label.textContent = val.toFixed(0);
+    svg.append(label);
+  }
+
+  // X labels
+  const maxXLabels = 6;
+  const step = Math.max(1, Math.floor(entries.length / maxXLabels));
+  for (let i = 0; i < entries.length; i += step) {
+    const xx = x(i);
+    const d = dates[i];
+    const label = document.createElementNS(ns, 'text');
+    label.setAttribute('x', xx);
+    label.setAttribute('y', H - 10);
+    label.setAttribute('text-anchor', 'middle');
+    label.setAttribute('fill', 'var(--text-tertiary)');
+    label.setAttribute('font-size', '11');
+    label.setAttribute('font-family', 'Outfit, sans-serif');
+    label.textContent = d.toLocaleDateString('en', { month: 'short', day: 'numeric' });
+    svg.append(label);
+  }
+
+  // Weight area + line
+  if (showWeight) {
+    const pts = entries.map((_, i) => [x(i), yW(i)]);
+
+    const area = document.createElementNS(ns, 'path');
+    area.setAttribute('d', areaPath(pts));
+    area.setAttribute('fill', 'url(#gradW)');
+    area.classList.add('chart-area', 'chart-area--weight');
+    svg.append(area);
+
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', smoothPath(pts));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'var(--chart-weight)');
+    path.setAttribute('stroke-width', '2.5');
+    path.setAttribute('stroke-linecap', 'round');
+    path.classList.add('chart-line', 'chart-line--weight');
+    svg.append(path);
+
+    // Measure length for animation
+    requestAnimationFrame(() => {
+      const len = path.getTotalLength();
+      path.style.setProperty('--line-len', len);
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = len;
+    });
+
+    // Dots
+    pts.forEach((p, i) => {
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', p[0]);
+      c.setAttribute('cy', p[1]);
+      c.setAttribute('r', '3.5');
+      c.setAttribute('fill', 'var(--chart-weight)');
+      c.setAttribute('stroke', 'var(--bg-raised)');
+      c.setAttribute('stroke-width', '2');
+      c.classList.add('chart-dot');
+      c.style.animationDelay = (0.4 + i * 0.04) + 's';
+      c.style.transformOrigin = `${p[0]}px ${p[1]}px`;
+      svg.append(c);
+    });
+  }
+
+  // Waist area + line
+  if (showWaist) {
+    const pts = entries.map((_, i) => [x(i), yC(i)]);
+
+    const area = document.createElementNS(ns, 'path');
+    area.setAttribute('d', areaPath(pts));
+    area.setAttribute('fill', 'url(#gradC)');
+    area.classList.add('chart-area', 'chart-area--waist');
+    svg.append(area);
+
+    const path = document.createElementNS(ns, 'path');
+    path.setAttribute('d', smoothPath(pts));
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', 'var(--chart-waist)');
+    path.setAttribute('stroke-width', '2.5');
+    path.setAttribute('stroke-linecap', 'round');
+    path.classList.add('chart-line', 'chart-line--waist');
+    svg.append(path);
+
+    requestAnimationFrame(() => {
+      const len = path.getTotalLength();
+      path.style.setProperty('--line-len', len);
+      path.style.strokeDasharray = len;
+      path.style.strokeDashoffset = len;
+    });
+
+    pts.forEach((p, i) => {
+      const c = document.createElementNS(ns, 'circle');
+      c.setAttribute('cx', p[0]);
+      c.setAttribute('cy', p[1]);
+      c.setAttribute('r', '3.5');
+      c.setAttribute('fill', 'var(--chart-waist)');
+      c.setAttribute('stroke', 'var(--bg-raised)');
+      c.setAttribute('stroke-width', '2');
+      c.classList.add('chart-dot');
+      c.style.animationDelay = (0.6 + i * 0.04) + 's';
+      c.style.transformOrigin = `${p[0]}px ${p[1]}px`;
+      svg.append(c);
+    });
+  }
+
+  // Invisible hover rects for tooltip
+  entries.forEach((entry, i) => {
+    const halfGap = i === 0 ? (x(1) - x(0)) / 2 : i === entries.length - 1 ? (x(i) - x(i - 1)) / 2 : Math.min((x(i) - x(i - 1)), (x(i + 1) - x(i))) / 2;
+    const rect = document.createElementNS(ns, 'rect');
+    rect.setAttribute('x', x(i) - halfGap);
+    rect.setAttribute('y', pad.top);
+    rect.setAttribute('width', halfGap * 2);
+    rect.setAttribute('height', ch);
+    rect.setAttribute('fill', 'transparent');
+    rect.style.cursor = 'crosshair';
+
+    rect.addEventListener('mouseenter', () => {
+      showChartTooltip(entry, x(i), Math.min(showWeight ? yW(i) : 999, showWaist ? yC(i) : 999));
+    });
+    rect.addEventListener('mouseleave', () => {
+      tooltip.classList.remove('visible');
+    });
+    svg.append(rect);
+  });
+
+  wrap.prepend(svg);
+}
+
+function showChartTooltip(entry, chartX, chartY) {
+  const tooltip = document.getElementById('chartTooltip');
+  const wrap = document.getElementById('chartWrap');
+  const rect = wrap.getBoundingClientRect();
+  const svgEl = wrap.querySelector('svg');
+  if (!svgEl) return;
+
+  const svgRect = svgEl.getBoundingClientRect();
+  const scaleX = svgRect.width / 800;
+  const scaleY = svgRect.height / 340;
+
+  const px = chartX * scaleX;
+  const py = chartY * scaleY;
+
+  document.getElementById('tooltipDate').textContent = new Date(entry.date + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+  document.getElementById('tooltipWeightVal').textContent = entry.weight + ' kg';
+  document.getElementById('tooltipWaistVal').textContent = entry.waist + ' cm';
+  document.getElementById('tooltipWeight').style.display = showWeight ? 'flex' : 'none';
+  document.getElementById('tooltipWaist').style.display = showWaist ? 'flex' : 'none';
+
+  const tw = tooltip.offsetWidth;
+  let left = px - tw / 2;
+  if (left < 4) left = 4;
+  if (left + tw > rect.width - 4) left = rect.width - tw - 4;
+
+  tooltip.style.left = left + 'px';
+  tooltip.style.top = Math.max(0, py - 60) + 'px';
+  tooltip.classList.add('visible');
+}
+
+/* ═══════════════════════════════════════════════
+   ENTRY LIST
+   ═══════════════════════════════════════════════ */
+function renderEntries(data) {
+  const list = document.getElementById('entriesList');
+  const entries = [...data.entries].reverse();
+  document.getElementById('entriesCount').textContent = entries.length + ' entr' + (entries.length === 1 ? 'y' : 'ies');
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><p>No entries yet</p></div>';
+    return;
+  }
+
+  list.innerHTML = entries.map((e, i) => {
+    const d = new Date(e.date + 'T00:00:00');
+    const formatted = d.toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+    return `
+      <div class="entry-row" style="animation-delay:${i * 0.03}s">
+        <div class="entry-date">${formatted}</div>
+        <div class="entry-metric">${e.weight}<span>kg</span></div>
+        <div class="entry-metric">${e.waist}<span>cm</span></div>
+        <div class="entry-actions">
+          <button onclick="editEntry('${e.date}')" title="Edit" aria-label="Edit entry">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+          </button>
+          <button class="btn-delete" onclick="deleteEntry('${e.date}')" title="Delete" aria-label="Delete entry">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════════════════
+   FORM LOGIC
+   ═══════════════════════════════════════════════ */
+let editingDate = null;
+
+function resetForm() {
+  editingDate = null;
+  document.getElementById('formTitle').textContent = 'Add Entry';
+  document.getElementById('entryDate').value = new Date().toISOString().split('T')[0];
+  document.getElementById('entryWeight').value = '';
+  document.getElementById('entryWaist').value = '';
+  document.getElementById('saveBtn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Save';
+}
+
+function editEntry(date) {
+  const data = getState();
+  const entry = data.entries.find(e => e.date === date);
+  if (!entry) return;
+
+  editingDate = date;
+  document.getElementById('formTitle').textContent = 'Edit Entry';
+  document.getElementById('entryDate').value = entry.date;
+  document.getElementById('entryWeight').value = entry.weight;
+  document.getElementById('entryWaist').value = entry.waist;
+  document.getElementById('saveBtn').innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Update';
+
+  document.getElementById('entryForm').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+async function deleteEntry(date) {
+  const d = new Date(date + 'T00:00:00').toLocaleDateString('en', { month: 'short', day: 'numeric', year: 'numeric' });
+  const ok = await confirmDialog('Delete entry from ' + d + '? This cannot be undone.');
+  if (!ok) return;
+
+  const data = getState();
+  data.entries = data.entries.filter(e => e.date !== date);
+  saveData(data);
+  renderAll();
+  showToast('Entry deleted');
+}
+
+document.getElementById('entryForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const date = document.getElementById('entryDate').value;
+  const weight = parseFloat(document.getElementById('entryWeight').value);
+  const waist = parseFloat(document.getElementById('entryWaist').value);
+
+  if (!date || isNaN(weight) || isNaN(waist)) return;
+
+  const data = getState();
+  const existing = data.entries.findIndex(e => e.date === date);
+
+  if (existing >= 0) {
+    data.entries[existing] = { date, weight, waist };
+    showToast('Entry updated');
+  } else {
+    data.entries.push({ date, weight, waist });
+    showToast('Entry added');
+  }
+
+  saveData(data);
+  resetForm();
+  renderAll();
+});
+
+document.getElementById('clearBtn').addEventListener('click', resetForm);
+
+/* ═══════════════════════════════════════════════
+   IMPORT / EXPORT
+   ═══════════════════════════════════════════════ */
+document.getElementById('exportBtn').addEventListener('click', () => {
+  const data = getState();
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'ww-tracker-data.json';
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Data exported');
+});
+
+document.getElementById('importInput').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    try {
+      const data = JSON.parse(ev.target.result);
+      if (!data || !Array.isArray(data.entries)) throw new Error('Invalid format');
+      // Validate entries
+      data.entries.forEach(entry => {
+        if (!entry.date || typeof entry.weight !== 'number' || typeof entry.waist !== 'number') {
+          throw new Error('Invalid entry format');
+        }
+      });
+      if (!data.version) data.version = 1;
+      saveData(data);
+      renderAll();
+      showToast('Data imported (' + data.entries.length + ' entries)');
+    } catch {
+      showToast('Invalid file format');
+    }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+});
+
+/* ═══════════════════════════════════════════════
+   CHART TOGGLES
+   ═══════════════════════════════════════════════ */
+document.getElementById('toggleWeight').addEventListener('click', function() {
+  showWeight = !showWeight;
+  this.classList.toggle('active', showWeight);
+  renderChart(getState());
+});
+
+document.getElementById('toggleWaist').addEventListener('click', function() {
+  showWaist = !showWaist;
+  this.classList.toggle('active', showWaist);
+  renderChart(getState());
+});
+
+/* ═══════════════════════════════════════════════
+   THEME TOGGLE
+   ═══════════════════════════════════════════════ */
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+
+/* ═══════════════════════════════════════════════
+   RENDER ALL
+   ═══════════════════════════════════════════════ */
+function renderAll() {
+  const data = getState();
+  renderStats(data);
+  renderChart(data);
+  renderEntries(data);
+}
+
+/* ═══════════════════════════════════════════════
+   INIT
+   ═══════════════════════════════════════════════ */
+async function init() {
+  initTheme();
+  resetForm();
+
+  // If localStorage is empty, try loading the data file
+  const data = getState();
+  if (!data.entries.length) {
+    try {
+      const res = await fetch('ww-tracker-data.json');
+      if (res.ok) {
+        const json = await res.json();
+        if (json && Array.isArray(json.entries) && json.entries.length) {
+          saveData(json);
+        }
+      }
+    } catch {}
+  }
+
+  renderAll();
+}
+
+init();
+</script>
+</body>
+</html>
